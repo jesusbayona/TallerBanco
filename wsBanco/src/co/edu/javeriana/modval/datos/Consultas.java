@@ -12,19 +12,24 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import javax.xml.bind.JAXBContext;
+/*import javax.xml.bind.JAXBContext;
 import javax.xml.namespace.QName;
 import javax.xml.rpc.Call;
 import javax.xml.rpc.Service;
 import javax.xml.rpc.ServiceFactory;
 import javax.xml.rpc.ParameterMode;
-import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.ServiceException;*/
 
+import org.apache.axis.client.Call;
+import org.apache.axis.client.Service; 
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import javax.xml.namespace.QName;
+import javax.xml.rpc.ParameterMode;
+import javax.xml.rpc.ServiceException;
 
 
 public class Consultas {
@@ -113,7 +118,7 @@ public class Consultas {
     public String ConsultaRest(String URL , String codigo, String valor, String operacion)throws IOException {
         String respuesta;
         //String uri = "http://localhost:8080/suma/Calculadora";
-        URL url = new URL(URL+operacion+codigo);
+        URL url = new URL(URL+"/"+operacion+"/"+codigo);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "application/json");
@@ -140,6 +145,17 @@ public class Consultas {
         //String uri = "http://localhost:8080/suma/Calculadora";
         String uri = URL;
         URL url = new URL(uri);
+        Service  service = new Service();
+        Call call = (Call) service.createCall();
+        QName any = new QName("http://www.servicios.co/pagos/service", "anyType[0,unbounded]");
+        QName string = new QName("http://www.servicios.co/pagos/service", "string");
+        call.setTargetEndpointAddress( url );
+        call.setOperationName(new QName("http://www.servicios.co/pagos/service", "Pagar"));
+        call.addParameter("sch:referenciaFactura", string, String.class, ParameterMode.IN);
+        call.addParameter("sch:totalPagar", string, String.class, ParameterMode.IN);
+        call.setReturnType(any);
+        
+        respuesta = (String) call.invoke( new Object[] { valor } );
         /*HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);
         connection.setDoInput(true);
@@ -147,7 +163,7 @@ public class Consultas {
         connection.setRequestProperty("Content-Type", "text/xml; charset=utf-8");
         respuesta = connection.getResponseMessage();*/
         
-        String namespace = "http://servicio/";
+        /*String namespace = "http://servicio/";
         String portName = "http://localhost:8080/suma/Calculadora";
         QName portQN = new QName(namespace, portName);
         String operationName = "sumarNumeros";
@@ -168,7 +184,7 @@ public class Consultas {
         call.addParameter("param1", portQN,ParameterMode.IN);
         call.setReturnType(portQN);
         Object[] inParams = new Object[] {"Jane"};
-        respuesta = (String) call.invoke(inParams);  
+        respuesta = (String) call.invoke(inParams);*/  
         
         return respuesta;
     }
