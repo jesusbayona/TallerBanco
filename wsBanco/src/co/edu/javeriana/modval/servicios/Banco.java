@@ -35,10 +35,11 @@ public class Banco {
                                     @WebParam(name = "nombreConvenio") String convenio,
                                     @WebParam(name = "parametros") String parametros,
                                     @WebParam(name = "url") String url,
-                                    @WebParam(name = "tipoConsumo") String tipoConsumo) throws IOException {
+                                    @WebParam(name = "tipoConsumo") String tipoConsumo,
+                                    @WebParam(name = "operacion") String operacion) throws IOException {
             String retorno;        
             try{
-                retorno = lConsultas.crearConvenio(codConvenio, convenio, parametros, url, tipoConsumo);   
+                retorno = lConsultas.crearConvenio(codConvenio, convenio, parametros, url, tipoConsumo,operacion);   
             }catch (IOException ex) {
                 return ex.getMessage();
             }

@@ -32,8 +32,8 @@ public class Consultas {
         super();
     }
     
-    public String crearConvenio(String codConvenio, String convenio, String parametros, String url, String tipoConsumo)
-                                                                                    throws IOException {
+    public String crearConvenio(String codConvenio, String convenio, String parametros, String url, String tipoConsumo,
+                                String operacion)throws IOException {
         File archivo = null;
         BufferedWriter bw = null;
         try{
@@ -45,11 +45,11 @@ public class Consultas {
             if(archivo.exists()) {
                 bw = new BufferedWriter(new FileWriter(archivo, true));
                 bw.newLine();
-                bw.write(codConvenio+";"+convenio+";"+parametros+";"+url+";"+tipoConsumo);
+                bw.write(codConvenio+";"+convenio+";"+parametros+";"+url+";"+tipoConsumo+";"+operacion);
                 resultado = "Creado el Convenio";
             } else {
                 bw = new BufferedWriter(new FileWriter(archivo));
-                bw.write(codConvenio+";"+convenio+";"+parametros+";"+url+";"+tipoConsumo);
+                bw.write(codConvenio+";"+convenio+";"+parametros+";"+url+";"+tipoConsumo+";"+operacion);
                 resultado = "Creado el Convenio";
             }
             return resultado;
@@ -72,21 +72,23 @@ public class Consultas {
         try{
             // Apertura del fichero y creacion de BufferedReader para poder
             // hacer una lectura comoda (disponer del metodo readLine()).
-            archivo = new File ("C:/Users/Jesus Bayona/Downloads/apache-tomcat-7.0.82/webapps/archivo.txt");
+            //archivo = new File ("C:/Users/Jesus Bayona/Downloads/apache-tomcat-7.0.82/webapps/archivo.txt");
+            archivo = new File ("/home/archivo.txt");
             fr = new FileReader (archivo);
             br = new BufferedReader(fr);
 
             // Lectura del fichero
             String URL;
-            
+            String operacion;
             String[] arrConsulta;
             while((linea=br.readLine())!= null){
                 if(!"".equalsIgnoreCase(linea)){
                     arrConsulta = linea.split(";");
                     if(codigo.equalsIgnoreCase(arrConsulta[0])){
                         URL =  arrConsulta[3];
+                        operacion = arrConsulta[5];
                         if(rest.equalsIgnoreCase(arrConsulta[4])){
-                            retorno = ConsultaRest(URL, codigo, valor);
+                            retorno = ConsultaRest(URL, codigo, valor, operacion);
                         }else{
                               retorno = ConsultaSOAP(URL, codigo, valor);
                         }
@@ -108,10 +110,10 @@ public class Consultas {
        }
    }
     
-    public String ConsultaRest(String URL , String codigo, String valor)throws IOException {
+    public String ConsultaRest(String URL , String codigo, String valor, String operacion)throws IOException {
         String respuesta;
         //String uri = "http://localhost:8080/suma/Calculadora";
-        URL url = new URL(URL);
+        URL url = new URL(URL+operacion+codigo);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
         connection.setRequestProperty("Accept", "application/json");
